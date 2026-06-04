@@ -1,5 +1,5 @@
 import express from 'express';
-import { connectDatabase } from './database.js';
+import { connectDatabase } from './config/database.js';
 import usersRouter from './routes/users.js';
 import teamsRouter from './routes/teams.js';
 import activitiesRouter from './routes/activities.js';
