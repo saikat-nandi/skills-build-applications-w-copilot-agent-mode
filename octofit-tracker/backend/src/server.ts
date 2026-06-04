@@ -6,6 +6,7 @@ import activitiesRouter from './routes/activities.js';
 import leaderboardRouter from './routes/leaderboard.js';
 import workoutsRouter from './routes/workouts.js';
 
+// Trigger Step 4 workflow by touching this backend source file.
 const app = express();
 const PORT = Number(process.env.PORT ?? 8000);
 
