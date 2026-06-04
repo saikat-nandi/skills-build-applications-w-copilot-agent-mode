@@ -1,6 +1,7 @@
 {
   "name": "octofit-tracker-backend",
   "version": "0.1.0",
+  "description": "OctoFit Tracker backend API server",
   "private": true,
   "type": "module",
   "scripts": {
