@@ -1,47 +1,88 @@
 import { Router, Request, Response } from 'express';
+import { User } from '../models/User.js';
 
 const router = Router();
 
 // GET /api/users/ - Retrieve all users
-router.get('/', (_req: Request, res: Response) => {
-  res.json({
-    message: 'Get all users',
-    data: [],
-  });
+router.get('/', async (_req: Request, res: Response) => {
+  try {
+    const users = await User.find().select('-password');
+    res.json({
+      message: 'Get all users',
+      count: users.length,
+      data: users,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
 });
 
 // GET /api/users/:id - Retrieve a specific user
-router.get('/:id', (req: Request, res: Response) => {
-  const { id } = req.params;
-  res.json({
-    message: `Get user ${id}`,
-    userId: id,
-  });
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).select('-password');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({
+      message: `Get user ${id}`,
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch user' });
+  }
 });
 
 // POST /api/users/ - Create a new user
-router.post('/', (req: Request, res: Response) => {
-  res.status(201).json({
-    message: 'User created',
-    data: req.body,
-  });
+router.post('/', async (req: Request, res: Response) => {
+  try {
+    const user = new User(req.body);
+    await user.save();
+    const userObject = user.toObject();
+    const { password, ...userResponse } = userObject;
+    res.status(201).json({
+      message: 'User created',
+      data: userResponse,
+    });
+  } catch (error) {
+    res.status(400).json({ error: 'Failed to create user' });
+  }
 });
 
 // PUT /api/users/:id - Update a user
-router.put('/:id', (req: Request, res: Response) => {
-  const { id } = req.params;
-  res.json({
-    message: `User ${id} updated`,
-    data: req.body,
-  });
+router.put('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByIdAndUpdate(id, req.body, {
+      new: true,
+    }).select('-password');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({
+      message: `User ${id} updated`,
+      data: user,
+    });
+  } catch (error) {
+    res.status(400).json({ error: 'Failed to update user' });
+  }
 });
 
 // DELETE /api/users/:id - Delete a user
-router.delete('/:id', (req: Request, res: Response) => {
-  const { id } = req.params;
-  res.json({
-    message: `User ${id} deleted`,
-  });
+router.delete('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({
+      message: `User ${id} deleted`,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
 });
 
 export default router;
