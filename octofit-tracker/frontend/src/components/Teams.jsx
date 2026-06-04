@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { API_BASE_URL, buildApiUrl, getEnvironmentNotice, normalizeListResponse } from '../utils/api.js'
 
+// This component loads data from the Codespace-aware API endpoint:
+// https://${CODESPACE_NAME}-8000.app.github.dev/api/teams
 const RESOURCE = 'teams'
 
 function Teams() {
